@@ -33,7 +33,7 @@ def get_testing_cosmos():
     return np.loadtxt("testing_cosmologies.txt")
 
 def make_linear_power_spectra():
-    """Create P_lin(k) for all cosmologies.
+    """Create P_lin(k) for all cosmologies. This uses CLASS.
     """
     #Define save paths
 
@@ -75,12 +75,65 @@ def make_linear_power_spectra():
         cosmo.set(params)
         cosmo.compute()
         for j in range(len(zs)):
-            p = np.array([cosmo.pk_lin(ki, zs[j]) for ki in k])
+            plins[i,j] = np.array([cosmo.pk_lin(ki, zs[j]) for ki in k])
         print "Finished testing box%d"%i
     np.save("plin/plins_testing_all_mpc3", plins)
 
     #Third do the highres cosmos TODO
+    print "Finished linear power spectra"
+    return
+
+def make_nonlinear_power_spectra():
+    """Create P_nonlin(k) for all cosmologies. This uses halofit-takahashi as implemented in CLASS.
+    """
+    #Define save paths
+
+    #Define the wavenumbers
+    k = np.logspace(np.log10(kmin), np.log10(kmax), num=1000) #Mpc^-1
+    np.savetxt("plin/k.txt", k, header="k Mpc^-1", fmt="%e")
+    
+    #First do the training cosmos
+    training_cos = get_training_cosmos()
+    Nc = len(training_cos)
+    pnls = np.zeros((Nc, Nz, len(k)))
+    for i in range(Nc):
+        obh2, och2, w, ns, ln10As, H0, Neff, s8 = training_cos[i]
+        h = H0/100.
+        Omega_b = obh2/h**2
+        Omega_c = och2/h**2
+        Omega_m = Omega_b+Omega_c
+        params = {'output': 'mPk', 'h': h, 'ln10^{10}A_s': ln10As, 'n_s': ns, 'w0_fld': w, 'wa_fld': 0.0, 'Omega_b': Omega_b, 'Omega_cdm': Omega_c, 'Omega_Lambda': 1.- Omega_m, 'N_eff': Neff, 'P_k_max_1/Mpc':10., 'z_max_pk':5., 'non linear':'halofit'}
+        cosmo = Class()
+        cosmo.set(params)
+        cosmo.compute()
+        for j in range(len(zs)):
+            pnls[i,j] = np.array([cosmo.pk(ki, zs[j]) for ki in k])
+        print "Finished training box%d"%i
+    np.save("pnl/pnls_training_all_mpc3", pnls)
+
+    #Second do the testing cosmos
+    testing_cos = get_testing_cosmos()
+    Nc = len(testing_cos)
+    pnls = np.zeros((Nc, Nz, len(k)))
+    for i in range(len(testing_cos)):
+        obh2, och2, w, ns, ln10As, H0, Neff, s8 = testing_cos[i]
+        h = H0/100.
+        Omega_b = obh2/h**2
+        Omega_c = och2/h**2
+        Omega_m = Omega_b+Omega_c
+        params = {'output': 'mPk', 'h': h, 'ln10^{10}A_s': ln10As, 'n_s': ns, 'w0_fld': w, 'wa_fld': 0.0, 'Omega_b': Omega_b, 'Omega_cdm': Omega_c, 'Omega_Lambda': 1.- Omega_m, 'N_eff': Neff, 'P_k_max_1/Mpc':10., 'z_max_pk':5., 'non linear':'halofit' }
+        cosmo = Class()
+        cosmo.set(params)
+        cosmo.compute()
+        for j in range(len(zs)):
+            pnls[i,j] = np.array([cosmo.pk(ki, zs[j]) for ki in k])
+        print "Finished testing box%d"%i
+    np.save("pnl/pnls_testing_all_mpc3", pnls)
+
+    #Third do the highres cosmos TODO
+    print "Finished nonlinear power spectra"
     return
 
 if __name__ == "__main__":
     make_linear_power_spectra()
+    make_nonlinear_power_spectra()
