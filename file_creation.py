@@ -197,23 +197,46 @@ def make_peak_height():
     print "Finished all peak heights"
     return
 
+def calc_hmf(cosmos, zs):
+    import aemHMF
+    hmf = aemHMF.Aemulus_HMF()
+
+    Nc = len(cosmos)
+    Nz = len(zs)
+    dndlMs = np.zeros((Nc, Nz, len(M)))
+    for i in range(Nc):
+        Ombh2, Omch2, w, ns, ln10As, H0, Neff, sig8 = cosmos[i]
+        cosmo={'Obh2':Ombh2, 'Och2':Omch2, 'w0':w, 'n_s':ns, 'ln10^{10}A_s':ln10As, 'N_eff':Neff, 'H0':H0}
+        hmf.set_cosmology(cosmo)
+        for j in range(Nz):
+            z = zs[j]
+            dndlMs[i,j] = hmf.dndlM(M,z)
+            continue
+        print "Finished with dndlM in box%d"%i
+        continue
+    return dndlMs
+
 def make_mass_function():
     #Note: this is the Aemulus mass function (McClintock+ 2018)
     np.savetxt("mass_function/M.txt", M, header="M [Msun/h]")
 
     #First do the training cosmos
     training_cos = get_training_cosmos()
-    #plins = np.load("plin/plins_training_all_mpc3.npy") #[Mpc]^3
+    dndlMs = calc_hmf(training_cos, zs)
+    np.save("mass_function/dndlM_training_all", dndlMs)
 
     #Second do the testing cosmos
     testing_cos = get_testing_cosmos()
-    #plins = np.load("plin/plins_testing_all_mpc3.npy") #[Mpc]^3
+    dndlMs = calc_hmf(testing_cos, zs)
+    np.save("mass_function/dndlM_testing_all", dndlMs)
 
     print "Finished all mass functions"
     return
+
 if __name__ == "__main__":
     #make_linear_power_spectra()
     #make_nonlinear_power_spectra()
     #make_linear_correlation_function()
     #make_nonlinear_correlation_function()
-    make_peak_height()
+    #make_peak_height()
+    make_mass_function()
