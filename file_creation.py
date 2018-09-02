@@ -6,6 +6,7 @@ in the Aemulus simulations.
 import numpy as np
 from classy import Class
 import cluster_toolkit.xi as ctxi
+import cluster_toolkit.peak_height as ctph
 
 #Aemulus scale factors for test and training sims
 sfs = np.array([0.25, 0.333333, 0.5, 0.540541, 0.588235, 0.645161, 0.714286, 0.8, 0.909091, 1.])
@@ -20,6 +21,10 @@ k = np.logspace(np.log10(kmin), np.log10(kmax), num=1000) #Mpc^-1
 rmin = 0.1
 rmax = 100.
 r = np.logspace(np.log10(rmin), np.log10(rmax), num=1000) #Mpc/h
+#Mass limits for peak height, bias and mass function
+Mmin = 1e11
+Mmax = 1e16
+M = np.logspace(np.log10(Mmin), np.log10(Mmax), num=1000) #Msun/h
 
 def get_training_cosmos():
     """Get the training simulation cosmologies.
@@ -155,9 +160,60 @@ def make_nonlinear_correlation_function():
     print "Finished all xi_nl calculations"
     return
 
+def calc_peak_height(cosmos, zs, k, p):
+    Nc = len(cosmos)
+    Nz = len(zs)
+    nus = np.zeros((Nc, Nz, len(M)))
+    for i in range(Nc):
+        obh2, och2, w, ns, ln10As, H0, Neff, s8 = cosmos[i]
+        h = H0/100.
+        Om = (obh2+och2)/h**2
+        kh = k/h #now h/Mpc
+        for j in range(Nz):
+            ph3 = p[i,j]*h**3 #now (Mpc/h)^3
+            nus[i,j] = ctph.nu_at_M(M, kh, ph3, Om)
+            continue
+        print "Finished peak height box %d"%i
+        continue
+    return nus
 
+
+def make_peak_height():
+    np.savetxt("peak_height/M.txt", M, header="M [Msun/h]")
+    k = np.loadtxt("plin/k.txt") #1/Mpc
+
+    #First do the training cosmos
+    training_cos = get_training_cosmos()
+    plins = np.load("plin/plins_training_all_mpc3.npy") #[Mpc]^3
+    nus = calc_peak_height(training_cos, zs, k, plins)
+    np.save("peak_height/peak_height_training_all", nus)
+    
+    #Second do the testing cosmos
+    testing_cos = get_testing_cosmos()
+    plins = np.load("plin/plins_testing_all_mpc3.npy") #[Mpc]^3
+    nus = calc_peak_height(testing_cos, zs, k, plins)
+    np.save("peak_height/peak_height_testing_all", nus)
+
+    print "Finished all peak heights"
+    return
+
+def make_mass_function():
+    #Note: this is the Aemulus mass function (McClintock+ 2018)
+    np.savetxt("mass_function/M.txt", M, header="M [Msun/h]")
+
+    #First do the training cosmos
+    training_cos = get_training_cosmos()
+    #plins = np.load("plin/plins_training_all_mpc3.npy") #[Mpc]^3
+
+    #Second do the testing cosmos
+    testing_cos = get_testing_cosmos()
+    #plins = np.load("plin/plins_testing_all_mpc3.npy") #[Mpc]^3
+
+    print "Finished all mass functions"
+    return
 if __name__ == "__main__":
     #make_linear_power_spectra()
     #make_nonlinear_power_spectra()
-    make_linear_correlation_function()
-    make_nonlinear_correlation_function()
+    #make_linear_correlation_function()
+    #make_nonlinear_correlation_function()
+    make_peak_height()
