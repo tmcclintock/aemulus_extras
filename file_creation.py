@@ -233,10 +233,19 @@ def make_mass_function():
     print "Finished all mass functions"
     return
 
+def make_bias():
+    #Note: this is the Aemulus bias (McClintock+ 201?)
+    np.savetxt("bias/M.txt", M, header="M [Msun/h]")
+
+    #Load the data that was computed elsewhere...
+    
+    return
+
 if __name__ == "__main__":
     #make_linear_power_spectra()
     #make_nonlinear_power_spectra()
     #make_linear_correlation_function()
     #make_nonlinear_correlation_function()
     #make_peak_height()
-    make_mass_function()
+    #make_mass_function()
+    make_bias()
