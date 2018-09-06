@@ -4,7 +4,6 @@ analytic data for a given simulation.
 import inspect, os
 import numpy as np
 here = os.path.dirname(os.path.realpath(__file__))
-print here, "is here"
 
 class Extras(object):
 
@@ -28,6 +27,11 @@ class Extras(object):
         self.P_lins = np.load(here+"/plin/plins_%s_all_mpc3.npy"%(name))[index]*self.h**3
         #Third, the nonlinear power spectrum
         self.P_nls = np.load(here+"/pnl/pnls_%s_all_mpc3.npy"%(name))[index]*self.h**3
+        #Fourth, the linear matter correlation function
+        #Fifth, the nonlinear matter correlation function
+        #Sixth, the halo mass function from aemulus
+        #Seventh, the halo bias from aemulus
+        
 
 if __name__ == "__main__":
     e = Extras(0)
