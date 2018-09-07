@@ -8,8 +8,8 @@ setup(
     py_modules=['aemulus_extras'],
     include_package_data=True,
     # adding packages
-    package=find_packages(),
-    install_requires=['numpy'],
+    packages=find_packages(),
+    install_requires=['numpy',],
     setup_requires=['pytest_runner'],
     tests_require=['pytest']
 )
