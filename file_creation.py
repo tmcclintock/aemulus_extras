@@ -19,7 +19,7 @@ kmax = 10
 k = np.logspace(np.log10(kmin), np.log10(kmax), num=1000) #Mpc^-1
 #3d r values in Mpc/h
 rmin = 0.1
-rmax = 100.
+rmax = 200.
 r = np.logspace(np.log10(rmin), np.log10(rmax), num=1000) #Mpc/h
 #Mass limits for peak height, bias and mass function
 Mmin = 1e11
@@ -115,7 +115,7 @@ def calc_ximm(cosmos, zs, k, p):
         kh = k/h #now h/Mpc
         for j in range(Nz):
             ph3 = p[i,j]*h**3 #now (Mpc/h)^3
-            xis[i,j] = ctxi.xi_mm_at_R(r, kh, ph3)
+            xis[i,j] = ctxi.xi_mm_at_R(r, kh, ph3)#, exact=True)
             continue
         print "Finished ximm box %d"%i
     return xis
@@ -238,7 +238,7 @@ def make_bias():
     np.savetxt("bias/M.txt", M, header="M [Msun/h]")
 
     #Load the data that was computed elsewhere...
-    
+    print "Finished with bias. Computed elsewhere for now..."
     return
 
 if __name__ == "__main__":
@@ -247,5 +247,7 @@ if __name__ == "__main__":
     #make_linear_correlation_function()
     #make_nonlinear_correlation_function()
     #make_peak_height()
-    #make_mass_function()
-    make_bias()
+    #make_mass_function() #Issue in box 4, 13, 19, 26
+    #make_bias()
+
+    print "Finished with file creation

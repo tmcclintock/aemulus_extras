@@ -45,7 +45,12 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
 
     for i in range(40):
-        e = Extras(i)
+        e = Extras(i, testing=True)
         for j in range(10):
-            plt.loglog(e.k, e.P_nl[j])
+            #plt.loglog(e.k, e.P_lin[j])
+            #plt.loglog(e.r, e.xi_nl[j])
+            #plt.loglog(e.M, e.nu[j])
+            plt.loglog(e.M, e.dndlM[j]/e.M)
+        plt.title("box %d"%i)
+        plt.ylim(1e-30,1e-12)
         plt.show()
