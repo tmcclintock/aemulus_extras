@@ -32,7 +32,7 @@ def get_training_cosmos():
     Returns:
         40x8 numpy array with columns: ombh2, omch2, w0, ns, ln10As, H0, Neff, s8
     """
-    return np.loadtxt("training_cosmologies.txt")
+    return np.loadtxt("cosmologies/training_cosmologies.txt")
 
 def get_testing_cosmos():
     """Get the testing simulation cosmologies.
@@ -40,7 +40,7 @@ def get_testing_cosmos():
     Returns:
         40x8 numpy array with columns: ombh2, omch2, w0, ns, ln10As, H0, Neff, s8
     """
-    return np.loadtxt("testing_cosmologies.txt")
+    return np.loadtxt("cosmologies/testing_cosmologies.txt")
 
 def calc_power_spec(cosmos, zs, lin=True):
     Nc = len(cosmos)
@@ -247,7 +247,7 @@ if __name__ == "__main__":
     #make_linear_correlation_function()
     #make_nonlinear_correlation_function()
     #make_peak_height()
-    make_mass_function() #Issue in box 4, 13, 19, 26
+    #make_mass_function() #Issue in box 4, 13, 19, 26
     #make_bias()
 
     print "Finished with file creation"

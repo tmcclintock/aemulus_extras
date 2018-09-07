@@ -20,7 +20,7 @@ class Extras(object):
 
         #Load in all the data
         #First, the cosmology
-        self.cosmology = np.loadtxt(here+"/%s_cosmologies.txt"%(name))[index]
+        self.cosmology = np.loadtxt(here+"/cosmologies/%s_cosmologies.txt"%(name))[index]
         self.h = self.cosmology[5]/100. #Hubble constant
         #Second, the linear power spectrum
         self.k = np.loadtxt(here+"/plin/k.txt")/self.h
