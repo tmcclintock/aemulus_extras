@@ -24,15 +24,28 @@ class Extras(object):
         self.h = self.cosmology[5]/100. #Hubble constant
         #Second, the linear power spectrum
         self.k = np.loadtxt(here+"/plin/k.txt")/self.h
-        self.P_lins = np.load(here+"/plin/plins_%s_all_mpc3.npy"%(name))[index]*self.h**3
+        self.P_lin = np.load(here+"/plin/plins_%s_all_mpc3.npy"%(name))[index]*self.h**3
         #Third, the nonlinear power spectrum
-        self.P_nls = np.load(here+"/pnl/pnls_%s_all_mpc3.npy"%(name))[index]*self.h**3
+        self.P_nl = np.load(here+"/pnl/pnls_%s_all_mpc3.npy"%(name))[index]*self.h**3
         #Fourth, the linear matter correlation function
+        self.r = np.loadtxt(here+"/xilin/r.txt")
+        self.xi_lin = np.load(here+"/xilin/xilins_%s_all.npy"%(name))[index]
         #Fifth, the nonlinear matter correlation function
+        self.xi_nl = np.load(here+"/xinl/xinls_%s_all.npy"%(name))[index]
+        #Sixth, the peak height
+        self.M = np.loadtxt(here+"/peak_height/M.txt")
+        self.nu = np.load(here+"/peak_height/peak_height_%s_all.npy"%(name))[index]
         #Sixth, the halo mass function from aemulus
+        self.dndlM = np.load(here+"/mass_function/dndlM_%s_all.npy"%(name))[index]
         #Seventh, the halo bias from aemulus
-        
+        self.bias = np.load(here+"/bias/bias_%s_all.npy"%(name))[index]
+        return
 
 if __name__ == "__main__":
-    e = Extras(0)
-    print e
+    import matplotlib.pyplot as plt
+
+    for i in range(40):
+        e = Extras(i)
+        for j in range(10):
+            plt.loglog(e.k, e.P_nl[j])
+        plt.show()
