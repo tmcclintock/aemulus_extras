@@ -50,8 +50,13 @@ if __name__ == "__main__":
             #plt.loglog(e.k, e.P_lin[j])
             #plt.loglog(e.r, e.xi_nl[j])
             #plt.loglog(e.M, e.nu[j])
-            #plt.loglog(e.M, e.dndlM[j]/e.M)
-            plt.loglog(e.M, e.bias[j])
+            
+            #print np.argmax(e.dndlM[j][:-1] - e.dndlM[j][1:])
+            #print e.M[612:616], "masses"
+            #print e.dndlM[j][612:616]
+            #print e.nu[j][612:616]
+            plt.loglog(e.M, e.dndlM[j]) #issue with box 4-4, 6-7, 7, 
+            #plt.loglog(e.M, e.bias[j])
         plt.title("box %d"%i)
-        #plt.ylim(1e-30,1e-12) #only for the mass function
+        plt.ylim(1e-10,1e-1) #only for the mass function
         plt.show()
