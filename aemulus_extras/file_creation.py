@@ -11,6 +11,11 @@ import cluster_toolkit.peak_height as ctph
 #Aemulus scale factors for test and training sims
 sfs = np.array([0.25, 0.333333, 0.5, 0.540541, 0.588235, 0.645161, 0.714286, 0.8, 0.909091, 1.])
 zs = 1./sfs -1
+#Aemulus scale factors for highres sims
+sfs_hr = np.array([0.165913, 0.246189, 0.323199, 0.486149, 0.513345, 0.564651,
+                   0.612689, 0.683156, 0.761728, 0.80434 , 0.849337, 0.89685 ,
+                   0.934222, 1.      ])
+zs_hr = 1./sfs_hr - 1.
 
 #Define some constants
 #k values in 1/Mpc
@@ -41,6 +46,18 @@ def get_testing_cosmos():
         40x8 numpy array with columns: ombh2, omch2, w0, ns, ln10As, H0, Neff, s8
     """
     return np.loadtxt("cosmologies/testing_cosmologies.txt")
+
+def get_highres_cosmos():
+    """Get the high resolution simulation cosmologies.
+
+    Note: these don't have sigma8 as of 10/3/2018. Zeros are appended.
+
+    Returns:
+        25x8 numpy array with columns: ombh2, omch2, w0, ns, ln10As, H0, Neff
+    """
+    cos = np.loadtxt("cosmologies/highres_cosmologies.txt")
+    Nc = len(cos)
+    return np.vstack((cos.T, np.zeros(Nc))).T
 
 def calc_power_spec(cosmos, zs, lin=True):
     Nc = len(cosmos)
@@ -82,7 +99,10 @@ def make_linear_power_spectra():
     plins = calc_power_spec(testing_cos, zs, lin=True)
     np.save("plin/plins_testing_all_mpc3", plins)
 
-    #Third do the highres cosmos TODO
+    #Third do the highres cosmos
+    hr_cos = get_highres_cosmos()
+    plins = calc_power_spec(hr_cos, zs_hr, lin=True)
+    np.save("plin/plins_highres_all_mpc3", plins)
     print "Finished linear power spectra"
     return
 
@@ -101,7 +121,10 @@ def make_nonlinear_power_spectra():
     pnls = calc_power_spec(testing_cos, zs, lin=False)
     np.save("pnl/pnls_testing_all_mpc3", pnls)
 
-    #Third do the highres cosmos TODO
+    #Third do the highres cosmos
+    hr_cos = get_highres_cosmos()
+    pnls = calc_power_spec(hr_cos, zs_hr, lin=False)
+    np.save("pnl/pnls_highres_all_mpc3", pnls)
     print "Finished nonlinear power spectra"
     return
 
@@ -136,7 +159,11 @@ def make_linear_correlation_function():
     xis = calc_ximm(testing_cos, zs, k, plins)
     np.save("xilin/xilins_testing_all", xis)
 
-    #Third do highres cosmos TODO
+    #Third do highres cosmos
+    hr_cos = get_highres_cosmos()
+    plins = np.load("plin/plins_highres_all_mpc3.npy") #[Mpc]^3
+    xis = calc_ximm(hr_cos, zs_hr, k, plins)
+    np.save("xilin/xilins_highres_all", xis)
     print "Finished all xi_lin calculations"
     return
 
@@ -156,7 +183,12 @@ def make_nonlinear_correlation_function():
     xis = calc_ximm(testing_cos, zs, k, pnls)
     np.save("xinl/xinls_testing_all", xis)
 
-    #Third do highres cosmos TODO
+    #Third do highres cosmos 
+    hr_cos = get_highres_cosmos()
+    pnls = np.load("pnl/pnls_highres_all_mpc3.npy") #[Mpc]^3
+    xis = calc_ximm(hr_cos, zs_hr, k, pnls)
+    np.save("xinl/xinls_highres_all", xis)
+
     print "Finished all xi_nl calculations"
     return
 
@@ -194,6 +226,11 @@ def make_peak_height():
     nus = calc_peak_height(testing_cos, zs, k, plins)
     np.save("peak_height/peak_height_testing_all", nus)
 
+    #Third do the highres cosmos
+    hr_cos = get_highres_cosmos()
+    plins = np.load("plin/plins_highres_all_mpc3.npy") #[Mpc]^3
+    nus = calc_peak_height(hr_cos, zs_hr, k, plins)
+    np.save("peak_height/peak_height_highres_all", nus)
     print "Finished all peak heights"
     return
 
@@ -230,6 +267,11 @@ def make_mass_function():
     dndlMs = calc_hmf(testing_cos, zs)
     np.save("mass_function/dndlM_testing_all", dndlMs)
 
+    #Third do the highres cosmos
+    hr_cos = get_highres_cosmos()
+    dndlMs = calc_hmf(hr_cos, zs_hr)
+    np.save("mass_function/dndlM_highres_all", dndlMs)
+    
     print "Finished all mass functions"
     return
 
@@ -247,7 +289,7 @@ if __name__ == "__main__":
     #make_linear_correlation_function()
     #make_nonlinear_correlation_function()
     #make_peak_height()
-    #make_mass_function() #Issue in box 4, 13, 19, 26
+    #make_mass_function() #Issue in training box 4, 13, 19, 26
     #make_bias()
 
     print "Finished with file creation"
