@@ -7,7 +7,7 @@ here = os.path.dirname(os.path.realpath(__file__))
 
 class Extras(object):
 
-    def __init__(self, index, testing=False):
+    def __init__(self, index, testing=False, highres=False):
         """Constructor for the simulation extras.
 
         Args:
@@ -16,6 +16,7 @@ class Extras(object):
         """
         self.index = index
         if testing: name = "testing"
+        elif highres: name = "highres"
         else: name = "training"
 
         #Load in all the data
