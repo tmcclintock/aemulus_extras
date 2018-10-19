@@ -289,7 +289,7 @@ if __name__ == "__main__":
     #make_linear_correlation_function()
     #make_nonlinear_correlation_function()
     #make_peak_height()
-    #make_mass_function() #Issue in training box 4, 13, 19, 26
+    make_mass_function() #Issue in training box 4, 13, 19, 26
     #make_bias()
 
     print "Finished with file creation"
