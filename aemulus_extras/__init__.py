@@ -40,6 +40,9 @@ class Extras(object):
         self.dndlM = np.load(here+"/mass_function/dndlM_%s_all.npy"%(name))[index]
         #Seventh, the halo bias from aemulus
         self.bias = np.load(here+"/bias/bias_%s_all.npy"%(name))[index]
+        #Eigth, the emulator predicted matter correlation function
+        self.r_ximm = np.loadtxt(here+"/ximm/rmm.txt")
+        self.xi_mm = np.load(here+"/ximm/ximms_%s_all.npy"%(name))[index]
         return
 
 if __name__ == "__main__":

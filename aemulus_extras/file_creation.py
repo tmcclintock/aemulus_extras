@@ -7,6 +7,7 @@ import numpy as np
 from classy import Class
 import cluster_toolkit.xi as ctxi
 import cluster_toolkit.peak_height as ctph
+import ximm_emulator
 
 #Aemulus scale factors for test and training sims
 sfs = np.array([0.25, 0.333333, 0.5, 0.540541, 0.588235, 0.645161, 0.714286, 0.8, 0.909091, 1.])
@@ -283,13 +284,44 @@ def make_bias():
     print "Finished with bias. Computed elsewhere for now..."
     return
 
+def make_matter_correlation_function():
+    rmm = np.loadtxt("ximm/r.txt") #50 long
+    Nz = len(zs)
+    Nr = len(rmm)
+
+    #First do the training cosmos
+    training_cos = get_training_cosmos()[:,:-1] #remove sigma8
+    emu = ximm_emulator.ximm_emulator(training_cos[0])
+    xis = np.zeros((len(training_cos), Nz, Nr))
+    for i, cos in enumerate(training_cos):
+        xis[i] = emu.predict(cos).reshape(Nz, Nr)
+    np.save("ximm/ximms_training_all", xis)
+
+    #Second do the testing cosmos
+    testing_cos = get_testing_cosmos()[:,:-1] #remove sigma8
+    xis = np.zeros((len(testing_cos), Nz, Nr))
+    for i, cos in enumerate(testing_cos):
+        xis[i] = emu.predict(cos).reshape(Nz, Nr)
+
+    np.save("ximm/ximms_testing_all", xis)
+
+    #Third do the highres cosmos
+    hr_cos = get_highres_cosmos()[:,:-1] #remove sigma8
+    xis = np.zeros((len(hr_cos), Nz, Nr))
+    for i, cos in enumerate(hr_cos):
+        xis[i] = emu.predict(cos).reshape(Nz, Nr)
+    np.save("ximm/ximms_highres_all", xis)
+
+    print("Finished all emulated matter correlation functions")
+
 if __name__ == "__main__":
     #make_linear_power_spectra()
     #make_nonlinear_power_spectra()
     #make_linear_correlation_function()
     #make_nonlinear_correlation_function()
     #make_peak_height()
-    make_mass_function() #Issue in training box 4, 13, 19, 26
+    #make_mass_function() #Issue in training box 4, 13, 19, 26
     #make_bias()
-
+    make_matter_correlation_function()
+    
     print "Finished with file creation"
