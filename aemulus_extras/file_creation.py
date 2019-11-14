@@ -82,7 +82,7 @@ def calc_power_spec(cosmos, zs, lin=True):
             else:
                 ps[i,j] = np.array([cosmo.pk(ki, zs[j]) for ki in k])
             continue
-        print "Finished box%d"%i
+        print("Finished box%d"%i)
     return ps
 
 def make_linear_power_spectra():
@@ -104,7 +104,7 @@ def make_linear_power_spectra():
     hr_cos = get_highres_cosmos()
     plins = calc_power_spec(hr_cos, zs_hr, lin=True)
     np.save("plin/plins_highres_all_mpc3", plins)
-    print "Finished linear power spectra"
+    print("Finished linear power spectra")
     return
 
 def make_nonlinear_power_spectra():
@@ -126,7 +126,7 @@ def make_nonlinear_power_spectra():
     hr_cos = get_highres_cosmos()
     pnls = calc_power_spec(hr_cos, zs_hr, lin=False)
     np.save("pnl/pnls_highres_all_mpc3", pnls)
-    print "Finished nonlinear power spectra"
+    print("Finished nonlinear power spectra")
     return
 
 def calc_ximm(cosmos, zs, k, p):
@@ -141,7 +141,7 @@ def calc_ximm(cosmos, zs, k, p):
             ph3 = p[i,j]*h**3 #now (Mpc/h)^3
             xis[i,j] = ctxi.xi_mm_at_R(r, kh, ph3)#, exact=True)
             continue
-        print "Finished ximm box %d"%i
+        print("Finished ximm box %d"%i)
     return xis
             
 def make_linear_correlation_function():
@@ -165,7 +165,7 @@ def make_linear_correlation_function():
     plins = np.load("plin/plins_highres_all_mpc3.npy") #[Mpc]^3
     xis = calc_ximm(hr_cos, zs_hr, k, plins)
     np.save("xilin/xilins_highres_all", xis)
-    print "Finished all xi_lin calculations"
+    print("Finished all xi_lin calculations")
     return
 
 def make_nonlinear_correlation_function():
@@ -190,7 +190,7 @@ def make_nonlinear_correlation_function():
     xis = calc_ximm(hr_cos, zs_hr, k, pnls)
     np.save("xinl/xinls_highres_all", xis)
 
-    print "Finished all xi_nl calculations"
+    print("Finished all xi_nl calculations")
     return
 
 def calc_peak_height(cosmos, zs, k, p):
@@ -206,7 +206,7 @@ def calc_peak_height(cosmos, zs, k, p):
             ph3 = p[i,j]*h**3 #now (Mpc/h)^3
             nus[i,j] = ctph.nu_at_M(M, kh, ph3, Om)
             continue
-        print "Finished peak height box %d"%i
+        print("Finished peak height box %d"%i)
         continue
     return nus
 
@@ -232,7 +232,7 @@ def make_peak_height():
     plins = np.load("plin/plins_highres_all_mpc3.npy") #[Mpc]^3
     nus = calc_peak_height(hr_cos, zs_hr, k, plins)
     np.save("peak_height/peak_height_highres_all", nus)
-    print "Finished all peak heights"
+    print("Finished all peak heights")
     return
 
 def calc_hmf(cosmos, zs):
@@ -250,7 +250,7 @@ def calc_hmf(cosmos, zs):
             z = zs[j]
             dndlMs[i,j] = hmf.dndlM(M,z)
             continue
-        print "Finished with dndlM in box%d"%i
+        print ("Finished with dndlM in box%d"%i)
         continue
     return dndlMs
 
@@ -273,7 +273,7 @@ def make_mass_function():
     dndlMs = calc_hmf(hr_cos, zs_hr)
     np.save("mass_function/dndlM_highres_all", dndlMs)
     
-    print "Finished all mass functions"
+    print("Finished all mass functions")
     return
 
 def make_bias():
@@ -281,7 +281,7 @@ def make_bias():
     np.savetxt("bias/M.txt", M, header="M [Msun/h]")
 
     #Load the data that was computed elsewhere...
-    print "Finished with bias. Computed elsewhere for now..."
+    print("Finished with bias. Computed elsewhere for now...")
     return
 
 def make_matter_correlation_function():
@@ -324,4 +324,4 @@ if __name__ == "__main__":
     #make_bias()
     make_matter_correlation_function()
     
-    print "Finished with file creation"
+    print("Finished with file creation")
